@@ -5,8 +5,8 @@ import sys
 
 #day, second, micro milli min hour week
 target = datetime.today()
-#times = [timedelta(0, 0, 0, 0, 20), timedelta(0, 0, 0, 0, 5)]
-times = [timedelta(0, 10)]
+times = [timedelta(0, 0, 0, 0, 20), timedelta(0, 0, 0, 0, 5)]
+#times = [timedelta(0, 10)]
 time_index = 0
 
 def td_to_string(td):
@@ -16,8 +16,14 @@ def td_to_string(td):
     return "%02d:%02d:%02d" % (hours, minutes, seconds)
 
 def flash(sem):
+    flasher = False
     while sem.acquire(False):
-        print "flash"
+        if(flasher):
+            sys.stdout.write("\rX-X-X-X-X")
+        else:
+            sys.stdout.write("\r-X-X-X-X-")
+        sys.stdout.flush()
+        flasher = not flasher
         sem.release()
         time.sleep(.5)
         
@@ -27,8 +33,10 @@ def alarm():
     t.start()
     #time.sleep(3)
     #print '\rStarting timer for %s\n' % td_to_string(times[time_index])
-    raw_input()
-    sem.acquire()
+    try:
+        raw_input()
+    finally:
+        sem.acquire()
 
 def updateTimer():
     global target
